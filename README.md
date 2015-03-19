@@ -24,6 +24,7 @@ alert-pop-usage.sh
 
 ###Usage
 
+Download it:
 ```
 mkdir /root/scripts/
 cd /root/scripts/
@@ -31,6 +32,14 @@ wget https://raw.github.com/vbenincasa/DirectAdmin-pop-alerts/master/alert-pop-i
 wget https://raw.github.com/vbenincasa/DirectAdmin-pop-alerts/master/alert-pop-usage.sh
 chmod 700 alert-pop-inactivity.sh alert-pop-usage.sh
 ```
+
+
+
+**IMPORTANT: After downloading it, edit the scripts options - at least the sender mail/name and admin to receive the report:**
+- ALERT_EMAIL_FROM_NAME
+- ALERT_EMAIL_FROM
+- ALERT_EMAIL_ADMIN
+
 
 Then you can run it manually:
 ```
