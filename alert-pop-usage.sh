@@ -17,7 +17,7 @@
 #
 # Free to use and redistribute, just keep the original credits.
 #
-# V 2.5 09/03/2015 14:08:38
+# V 2.6 20/03/2015 04:58:35
 #
 #########################################################################
 
@@ -125,6 +125,8 @@ CURRENT_DATE=$(date +%s)
 
 for username in `ls /usr/local/directadmin/data/users 2>/dev/null`; do
 {
+	HOMEPATH=$(grep -e "^${username}:" /etc/passwd | cut -d: -f6)
+
 	for domain in `cat /usr/local/directadmin/data/users/$username/domains.list 2>/dev/null`; do
 	{
 		for userquota in `cat /etc/virtual/$domain/quota 2>/dev/null`; do
@@ -133,24 +135,23 @@ for username in `ls /usr/local/directadmin/data/users 2>/dev/null`; do
 			((TOTAL_ANALYZED++))
 
 			USER=$(nice echo ${userquota} 2>/dev/null | cut -d: -f1 2>/dev/null)
-			MAILDIRPATH="/home/${username}/imap/${domain}/${USER}"
+			MAILDIRPATH="${HOMEPATH}/imap/${domain}/${USER}"
 
 			QUOTABYTES=$(nice echo ${userquota} 2>/dev/null | cut -d: -f2 2>/dev/null)
-			USAGEKB=$(nice du -s0 ${MAILDIRPATH} 2>/dev/null |awk '{print $1}' 2>/dev/null)
+			USAGEBYTES=$(nice du -s0 --bytes ${MAILDIRPATH} 2>/dev/null |awk '{print $1}' 2>/dev/null)
 
 			#--display-debug
-			case "$@" in --display-debug) echo -e "${TOTAL_ANALYZED} - Probing: ${username} \t ${USER}@${domain} Usage:(${USAGEKB}KB/${QUOTABYTES}B)";; esac
+			case "$@" in --display-debug) echo -e "${TOTAL_ANALYZED} - Probing: ${username} \t ${USER}@${domain} Usage:(${USAGEBYTES}B/${QUOTABYTES}B)";; esac
 
 			if [ "${QUOTABYTES}" -gt "0" ]; then
 				#Quota is set
 
-				QUOTAKB=$(nice echo ${QUOTABYTES}/1024 |bc)
-				LIMIT=$(nice echo ${QUOTAKB}*${ALERT_THRESHOLD} |bc |awk '{printf "%.0f\n", $1}')
+				LIMIT=$(nice echo ${QUOTABYTES}*${ALERT_THRESHOLD} |bc |awk '{printf "%.0f\n", $1}')
 
-				if [ $USAGEKB -gt $LIMIT ]; then
+				if [ $USAGEBYTES -gt $LIMIT ]; then
 
-					USAGEMB=$(echo ${USAGEKB}/1024 |bc)
-					QUOTAMB=$(echo ${QUOTAKB}/1024 |bc)
+					USAGEMB=$(nice echo ${USAGEBYTES}/1048576 |bc)
+					QUOTAMB=$(nice echo ${QUOTABYTES}/1048576 |bc)
 					DAUSEREMAIL=$(awk -F"=" '/email=/ {print $2}' /usr/local/directadmin/data/users/${username}/user.conf)
 					USAGEPERCENT=$(nice echo "scale=2; ${USAGEMB}/${QUOTAMB}*100" |/usr/bin/bc |/bin/awk '{printf "%.0f\n", $1}')
 	
@@ -193,7 +194,7 @@ for username in `ls /usr/local/directadmin/data/users 2>/dev/null`; do
 			elif ${REPORT_UNLIMITED}; then
 				#Unlimited quota
 
-				USAGEMB=$(echo ${USAGEKB}/1024 |bc)
+				USAGEMB=$(echo ${USAGEBYTES}/1048576 |bc)
 				list=$(echo -e "${list}\n0%\t(${USAGEMB}MB/Unlimited)\t|\t${USER}@${domain}\t|\t-\t|\t-\t|\t-\t|\t${username}\t|\t-")
 			fi
 
