@@ -28,8 +28,8 @@ Download it:
 ```
 mkdir /root/scripts/
 cd /root/scripts/
-wget https://raw.github.com/vbenincasa/DirectAdmin-pop-alerts/master/alert-pop-inactivity.sh
-wget https://raw.github.com/vbenincasa/DirectAdmin-pop-alerts/master/alert-pop-usage.sh
+wget --no-check-certificate https://raw.github.com/vbenincasa/DirectAdmin-pop-alerts/master/alert-pop-inactivity.sh
+wget --no-check-certificate https://raw.github.com/vbenincasa/DirectAdmin-pop-alerts/master/alert-pop-usage.sh
 chmod 700 alert-pop-inactivity.sh alert-pop-usage.sh
 ```
 
