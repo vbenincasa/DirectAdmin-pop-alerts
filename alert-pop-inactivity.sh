@@ -13,10 +13,11 @@
 # Remember to change the /path, chmod this script to 700 and chown to root
 #
 # Author: Victor Benincasa (vbenincasa @ gmail.com) 
+# Originally developed for Unihost Brasil (http://unihostbrasil.com.br)
 #
 # Free to use and redistribute, just keep the original credits.
 #
-# V 2.5 09/03/2015 14:08:38
+# V 2.6 20/03/2015 04:58:35
 #
 #########################################################################
 
@@ -126,6 +127,8 @@ CURRENT_DATE=$(date +%s)
 
 for username in `ls /usr/local/directadmin/data/users 2>/dev/null`; do
 {
+	HOMEPATH=$(grep -e "^${username}:" /etc/passwd | cut -d: -f6)
+
 	for domain in `cat /usr/local/directadmin/data/users/$username/domains.list 2>/dev/null`; do
 	{
 		for userquota in `cat /etc/virtual/$domain/quota 2>/dev/null`; do
@@ -134,7 +137,7 @@ for username in `ls /usr/local/directadmin/data/users 2>/dev/null`; do
 			((TOTAL_ANALYZED++))
 
 			USER=$(nice echo ${userquota} 2>/dev/null | cut -d: -f1 2>/dev/null)
-			MAILDIRPATH="/home/${username}/imap/${domain}/${USER}/Maildir"
+			MAILDIRPATH="${HOMEPATH}/imap/${domain}/${USER}/Maildir"
 
 			#--display-debug
 			case "$@" in --display-debug) echo -e "${TOTAL_ANALYZED} - Probing: ${username} \t ${USER}@${domain}";; esac
@@ -162,16 +165,14 @@ for username in `ls /usr/local/directadmin/data/users 2>/dev/null`; do
 
 					DAUSEREMAIL=$(awk -F"=" '/email=/ {print $2}' /usr/local/directadmin/data/users/${username}/user.conf)
 					QUOTABYTES=$(nice echo ${userquota} 2>/dev/null | cut -d: -f2 2>/dev/null)
-					USAGEKB=$(nice du -s0 ${MAILDIRPATH} 2>/dev/null |awk '{print $1}' 2>/dev/null)
-					USAGEMB=$(echo ${USAGEKB}/1024 |bc)
+					USAGEBYTES=$(nice du -s0 --bytes ${MAILDIRPATH} 2>/dev/null |awk '{print $1}' 2>/dev/null)
+					USAGEMB=$(nice echo ${USAGEBYTES}/1048576 |bc)
 
 					if [ "${QUOTABYTES}" -gt "0" ]; then
-						QUOTAKB=$(nice echo ${QUOTABYTES}/1024 |bc)
-						QUOTAMB=$(echo ${QUOTAKB}/1024 |bc)
+						QUOTAMB=$(nice echo ${QUOTABYTES}/1048576 |bc)
 						USAGEPERCENT=$(nice echo "scale=2; ${USAGEMB}/${QUOTAMB}*100" |/usr/bin/bc |/bin/awk '{printf "%.0f\n", $1}')
 						USAGE_MSG="${USAGEMB}MB\t(${USAGEPERCENT}% of ${QUOTAMB}MB)"
 					else
-						QUOTAKB=0
 						QUOTAMB=0
 						USAGEPERCENT=0
 						USAGE_MSG="${USAGEMB}MB\t(Unlimited!)"
