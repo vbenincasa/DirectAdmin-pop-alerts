@@ -17,7 +17,7 @@
 #
 # Free to use and redistribute, just keep the original credits.
 #
-# V 2.6 20/03/2015 04:58:35
+# V 2.8 08/06/2021
 #
 #########################################################################
 
@@ -39,8 +39,8 @@ ALERT_SUBJECT_USERS="Alert: Inactive mailbox"
 ALERT_SUBJECT_ADMIN="[${HOSTNAME}] Report: Inactive mailboxes"
 ALERT_EMAIL_ADMIN="admin@webhostingcompany.com"
 
-# Alias exists (some need only the alias but create the account unnecessarily)
-ALERT_ALIAS_EXISTS="This account has a redirect, you can just keep it and delete the account."
+# Alias exists (some users need only the alias but create the account unnecessarily)
+ALERT_ALIAS_EXISTS="<b>This account has a redirect, you can just keep it and delete the account.</b>"
 
 
 ############################################# 
@@ -152,8 +152,8 @@ for username in `ls /usr/local/directadmin/data/users 2>/dev/null`; do
 
 				NEW_MSG="${OLDESTFILE_NEW_DDIFF} days (${NUMFILES_NEW} unseen)"
 
-				if nice grep -q "${USER}:" /etc/virtual/$domain/aliases ; then
-					ALIAS_EXISTS=$(nice grep "${USER}:" /etc/virtual/$domain/aliases |cut -d':' -f2)
+				if nice grep -q "^${USER}:" /etc/virtual/$domain/aliases ; then
+					ALIAS_EXISTS=$(nice grep "^${USER}:" /etc/virtual/$domain/aliases |cut -d':' -f2)
 					if [ "$(echo ${#ALIAS_EXISTS})" -gt "38" ]; then ALIAS_EXISTS=$(echo ${ALIAS_EXISTS} |cut -c 1-35)."..."; fi
 					ALIAS_MSG="$ALERT_ALIAS_EXISTS";
 				else
