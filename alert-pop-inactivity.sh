@@ -52,10 +52,10 @@ From: ${ALERT_EMAIL_FROM_NAME} <${ALERT_EMAIL_FROM}>
 To: ${DAUSEREMAIL}
 Subject: ${ALERT_SUBJECT_USERS}
 MIME-Version: 1.0
-Content-Type: text/html; charset=iso-8859-1
+Content-Type: text/html; charset=utf-8
 
 <html>
-<head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"></head>
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>
 <body style="font-family:Verdana, Arial, Helvetica, sans-serif; font-size:11px;">
 	<p>Dear Customer,</p>
 	<p>The following e-mail account is not being accessed:</p>
@@ -91,10 +91,10 @@ From: ${ALERT_EMAIL_FROM_NAME} <${ALERT_EMAIL_FROM}>
 To: ${ALERT_EMAIL_ADMIN}
 Subject: ${ALERT_SUBJECT_ADMIN}
 MIME-Version: 1.0
-Content-Type: text/html; charset=iso-8859-1
+Content-Type: text/html; charset=utf-8
 
 <html>
-<head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"></head>
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>
 <body style="font-family:Verdana, Arial, Helvetica, sans-serif; font-size:11px;">
 	<p>Dear Admin,</p>
 	<p>Below is the report of <b>inactive POP accounts</b> (over ${ALERT_THRESHOLD} days):</p>
@@ -107,7 +107,6 @@ EOM
 
 
 ############################################# 
-# Main processing
 #
 
 function show_help {
